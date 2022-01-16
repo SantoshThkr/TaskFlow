@@ -30,3 +30,18 @@ def create_access_token(user_id: int) -> str:
         "exp": issued_at + timedelta(minutes=settings.access_token_expire_minutes),
     }
     return jwt.encode(payload, settings.jwt_secret, algorithm=settings.jwt_algorithm)
+
+
+def decode_access_token(token: str) -> int:
+    """Return the user id in a valid token, or raise jwt.InvalidTokenError."""
+    settings = get_settings()
+    payload = jwt.decode(
+        token,
+        settings.jwt_secret,
+        algorithms=[settings.jwt_algorithm],
+        options={"require": ["exp", "sub"]},
+    )
+    try:
+        return int(payload["sub"])
+    except (TypeError, ValueError) as exc:
+        raise jwt.InvalidTokenError("Token subject is not a user id") from exc
