@@ -3,7 +3,7 @@ from sqlalchemy import Select, case, func, select
 from sqlalchemy.orm import Session
 
 from app.models import Project, Task, TaskStatus, User
-from app.schemas.project import ProjectStats
+from app.schemas.project import ProjectCreate, ProjectStats, ProjectUpdate
 
 
 def get_owned_project(db: Session, project_id: int, user: User) -> Project:
@@ -68,3 +68,30 @@ def list_projects_with_stats(
         (row.Project, _build_stats(row.total_tasks, row.todo, row.in_progress, row.done))
         for row in db.execute(query)
     ]
+
+
+def create_project(db: Session, user: User, payload: ProjectCreate) -> Project:
+    project = Project(
+        owner_id=user.id, name=payload.name, description=payload.description
+    )
+    db.add(project)
+    db.commit()
+    db.refresh(project)
+    return project
+
+
+def update_project(
+    db: Session, project_id: int, user: User, payload: ProjectUpdate
+) -> Project:
+    project = get_owned_project(db, project_id, user)
+    project.name = payload.name
+    project.description = payload.description
+    db.commit()
+    db.refresh(project)
+    return project
+
+
+def delete_project(db: Session, project_id: int, user: User) -> None:
+    project = get_owned_project(db, project_id, user)
+    db.delete(project)
+    db.commit()
