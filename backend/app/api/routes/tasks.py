@@ -1,7 +1,7 @@
 from fastapi import APIRouter, status
 
 from app.api.deps import CurrentUser, DbSession
-from app.schemas.task import TaskCreate, TaskRead
+from app.schemas.task import TaskCreate, TaskRead, TaskUpdate
 from app.services import projects, tasks
 
 router = APIRouter(prefix="/api", tags=["tasks"])
@@ -25,3 +25,15 @@ def list_tasks(
 ) -> list[TaskRead]:
     project = projects.get_owned_project(db, project_id, current_user)
     return [TaskRead.model_validate(task) for task in tasks.list_tasks(db, project)]
+
+
+@router.put("/tasks/{task_id}", response_model=TaskRead)
+def update_task(
+    task_id: int, payload: TaskUpdate, current_user: CurrentUser, db: DbSession
+) -> TaskRead:
+    return TaskRead.model_validate(tasks.update_task(db, task_id, current_user, payload))
+
+
+@router.delete("/tasks/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_task(task_id: int, current_user: CurrentUser, db: DbSession) -> None:
+    tasks.delete_task(db, task_id, current_user)
