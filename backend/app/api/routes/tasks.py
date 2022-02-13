@@ -1,6 +1,9 @@
-from fastapi import APIRouter, status
+from typing import Annotated
+
+from fastapi import APIRouter, Query, status
 
 from app.api.deps import CurrentUser, DbSession
+from app.models import TaskStatus
 from app.schemas.task import TaskCreate, TaskRead, TaskUpdate
 from app.services import projects, tasks
 
@@ -21,10 +24,15 @@ def create_task(
 
 @router.get("/projects/{project_id}/tasks", response_model=list[TaskRead])
 def list_tasks(
-    project_id: int, current_user: CurrentUser, db: DbSession
+    project_id: int,
+    current_user: CurrentUser,
+    db: DbSession,
+    status_filter: Annotated[TaskStatus | None, Query(alias="status")] = None,
+    search: Annotated[str | None, Query(max_length=120)] = None,
 ) -> list[TaskRead]:
     project = projects.get_owned_project(db, project_id, current_user)
-    return [TaskRead.model_validate(task) for task in tasks.list_tasks(db, project)]
+    found = tasks.list_tasks(db, project, status_filter=status_filter, search=search)
+    return [TaskRead.model_validate(task) for task in found]
 
 
 @router.put("/tasks/{task_id}", response_model=TaskRead)

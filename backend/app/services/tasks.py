@@ -1,18 +1,40 @@
 from fastapi import HTTPException, status
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
-from app.models import Project, Task, User
+from app.models import Project, Task, TaskStatus, User
 from app.schemas.task import TaskCreate, TaskUpdate
 
 
-def list_tasks(db: Session, project: Project) -> list[Task]:
-    query = (
-        select(Task)
-        .where(Task.project_id == project.id)
-        .order_by(Task.created_at.desc(), Task.id.desc())
-    )
-    return list(db.scalars(query))
+def _escape_like(term: str) -> str:
+    """Escape LIKE wildcards so a literal % or _ in the search box matches itself."""
+    for char in ("\\", "%", "_"):
+        term = term.replace(char, f"\\{char}")
+    return term
+
+
+def list_tasks(
+    db: Session,
+    project: Project,
+    status_filter: TaskStatus | None = None,
+    search: str | None = None,
+) -> list[Task]:
+    query = select(Task).where(Task.project_id == project.id)
+
+    if status_filter is not None:
+        query = query.where(Task.status == status_filter)
+
+    term = (search or "").strip()
+    if term:
+        pattern = f"%{_escape_like(term)}%"
+        query = query.where(
+            or_(
+                Task.title.ilike(pattern, escape="\\"),
+                Task.description.ilike(pattern, escape="\\"),
+            )
+        )
+
+    return list(db.scalars(query.order_by(Task.created_at.desc(), Task.id.desc())))
 
 
 def create_task(db: Session, project: Project, payload: TaskCreate) -> Task:
