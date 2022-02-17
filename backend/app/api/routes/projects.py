@@ -4,6 +4,7 @@ from app.api.deps import CurrentUser, DbSession
 from app.schemas.project import (
     ProjectCreate,
     ProjectRead,
+    ProjectStats,
     ProjectUpdate,
     ProjectWithStats,
 )
@@ -45,3 +46,11 @@ def update_project(
 @router.delete("/{project_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_project(project_id: int, current_user: CurrentUser, db: DbSession) -> None:
     projects.delete_project(db, project_id, current_user)
+
+
+@router.get("/{project_id}/stats", response_model=ProjectStats)
+def get_project_stats(
+    project_id: int, current_user: CurrentUser, db: DbSession
+) -> ProjectStats:
+    project = projects.get_owned_project(db, project_id, current_user)
+    return projects.get_project_stats(db, project)
