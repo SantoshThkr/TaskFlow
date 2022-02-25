@@ -241,3 +241,35 @@ textarea.field-input {
   gap: 8px;
   justify-content: flex-end;
 }
+
+.auth-title {
+  margin-bottom: 20px;
+  font-size: 20px;
+}
+
+.auth-footer {
+  margin: 20px 0 0;
+  font-size: 14px;
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.alert {
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  border: 1px solid;
+}
+
+.alert-error {
+  color: var(--color-danger);
+  background: #fdf2f1;
+  border-color: #f2d2ce;
+}
+
+.alert-info {
+  color: #1f4788;
+  background: #eff4fd;
+  border-color: #cfdef8;
+}
