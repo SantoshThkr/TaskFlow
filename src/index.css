@@ -273,3 +273,16 @@ textarea.field-input {
   background: #eff4fd;
   border-color: #cfdef8;
 }
+
+.header-user {
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.state-message {
+  margin: 0;
+  padding: 24px;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
