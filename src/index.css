@@ -286,3 +286,18 @@ textarea.field-input {
   color: var(--color-text-muted);
   font-size: 14px;
 }
+
+.state-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 32px 20px;
+  background: var(--color-surface);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius);
+}
+
+.state-block .state-message {
+  padding: 0;
+}
