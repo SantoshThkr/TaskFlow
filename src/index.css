@@ -301,3 +301,19 @@ textarea.field-input {
 .state-block .state-message {
   padding: 0;
 }
+
+.stat-card {
+  text-align: center;
+}
+
+.stat-value {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.stat-label {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
