@@ -4,6 +4,7 @@ import os
 # have to be in place before anything from app.* is imported.
 os.environ.setdefault("DATABASE_URL", "sqlite+pysqlite:///:memory:")
 os.environ.setdefault("JWT_SECRET", "test-secret-that-is-long-enough-to-pass")
+os.environ.setdefault("BCRYPT_ROUNDS", "4")
 
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
