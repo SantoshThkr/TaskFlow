@@ -1,0 +1,7 @@
+node_modules
+dist
+coverage
+backend
+.git
+.github
+*.tsbuildinfo
